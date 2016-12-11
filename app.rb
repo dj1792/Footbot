@@ -380,6 +380,7 @@ def user_choice body
             r.Message message
           end
           twiml.text 
+        end
 
         elsif body.include? "4" 
               preference = Preference.all
@@ -407,10 +408,11 @@ def user_choice body
             r.Message message
           end
           twiml.text 
-
+        end
           
-        elsif body.include? "5" 
+        else body.include? "5" 
           #live news
+        end
     else 
       error_league
     end
@@ -509,6 +511,7 @@ end
 #   response.to_json
 
 # end 
+end
 end
 end
 end
