@@ -15,7 +15,7 @@ gem 'builder'
 
 gem 'twilio-ruby'
 
-gemspec 
+gem 'football_data'
 
 group :development, :test do
   gem 'sqlite3'
