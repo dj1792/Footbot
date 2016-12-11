@@ -137,7 +137,7 @@ def register sender
       r.Message "Great. I'll get you set up. First, what's your name?"
     end
     twiml.text 
- end 
+end 
 
 def error_out 
   
@@ -211,7 +211,7 @@ def create_preference
     end 
 end 
 
- def update_preference_pl body 
+def update_preference_pl body 
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" or body.include? "6"      
       preference_text 
       if body.include? "1" 
@@ -242,7 +242,7 @@ end
     else 
       error_league
     end
- end 
+end 
 
 def update_preference_bl body 
     if body.include? "1" or body.include? "2"       
@@ -259,9 +259,9 @@ def update_preference_bl body
     else 
       error_league
     end
- end 
+end 
 
- def update_preference_il body 
+def update_preference_il body 
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4"       
       preference_text 
       if body.include? "1" 
@@ -284,9 +284,9 @@ def update_preference_bl body
     else 
       error_league
     end
- end 
+end 
 
- def update_preference_sl body 
+def update_preference_sl body 
     if body.include? "1" or body.include? "2" or body.include? "3"      
       preference_text 
       if body.include? "1" 
@@ -305,7 +305,7 @@ def update_preference_bl body
     else 
       error_league
     end
- end  
+end  
 
 def preference_text
       session["last_context"] = "preference"
@@ -456,6 +456,14 @@ def user_choice_4
     twiml.text 
 end
 
+get'/' do
+  error 401
+end
+
+error 401 do
+  { error: "Not allowed"}.to_json
+end
+
 #code snippets
 
 
@@ -476,13 +484,7 @@ end
   
 # end
 
-# get'/' do
-# 	error 401
-# end
 
-# error 401 do
-# 	{ error: "Not allowed"}.to_json
-# end
 
 # get '/leaguetable' do 
 
