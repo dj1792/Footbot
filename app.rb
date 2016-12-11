@@ -448,7 +448,7 @@ def user_choice_4
         end
     else
         message = "You're not tracking any team yet."
-    else
+    end
     twiml = Twilio::TwiML::Response.new do |r|
         r.Message message
     end
@@ -544,3 +544,4 @@ end
 #   response.to_json
 
 # end 
+end
