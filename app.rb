@@ -414,8 +414,9 @@ def user_choice_3
               if status == "TIMED"
 
                 message = "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+              end
             end
-          end  
+          end
     else
         message = "You're not tracking any team yet."
     end
@@ -543,5 +544,5 @@ end
 
 #   response.to_json
 
-# end 
+end 
 end
