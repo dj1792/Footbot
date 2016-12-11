@@ -405,17 +405,14 @@ def user_choice body
               end
               end  
               end
-          else
-            message = "You're not tracking any team yet."
-          twiml = Twilio::TwiML::Response.new do |r|
-            r.Message message
-          end
+              else
+                  essage = "You're not tracking any team yet."
+              twiml = Twilio::TwiML::Response.new do |r|
+                r.Message message
+              end
+              twiml.text 
         end
-          twiml.text 
-        
-        end
-      end
-        end  
+      
         else body.include? "5" 
           #live news
         end
@@ -511,13 +508,12 @@ end
 # get "/twitter/search/:text" do 
 
 #   url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
-end
+
 #   response = HTTParty.get url
 
 #   response.to_json
 
 # end 
-end
 end
 end
 end
