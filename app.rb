@@ -381,6 +381,7 @@ def user_choice body
           end
           twiml.text 
         end
+      end
 
         elsif body.include? "4" 
               preference = Preference.all
@@ -400,7 +401,7 @@ def user_choice body
                 if position < 6
                   message += "#{  position }. #{team_name} with #{ points } points. \n"
                 end
-
+              end  
               end
           else
             message = "You're not tracking any team yet."
@@ -409,7 +410,7 @@ def user_choice body
           end
           twiml.text 
         end
-          
+        end  
         else body.include? "5" 
           #live news
         end
@@ -511,6 +512,7 @@ end
 #   response.to_json
 
 # end 
+end
 end
 end
 end
