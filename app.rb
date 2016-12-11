@@ -29,11 +29,8 @@ end
 
 # Take preference of what bot should do every week 
   # Before K.O
-    # List fixture 
+    # List fixture and KO time
     # List table rank
-    # List time of K.O.
-  # Live update from twitter
-  # Trending club news
 
 # Modifying preferences 
   # Team
@@ -77,6 +74,7 @@ client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
               twiml.text     
             else
               error_league
+            end
         elsif session["last_context"] == "league" 
               update_league body
         elsif session["last_context"] == "pl" 
@@ -90,17 +88,19 @@ client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
         elsif session["last_context"] == "preference" 
               update_user_preference body 
         elsif session["last_context"] == "registered" 
-              if body.include? "more"
-                session["last_context"] == "onboard" 
-              twiml = Twilio::TwiML::Response.new do |r|
-              r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
-            end
-              twiml.text
+              if session["status"] == "live" and session["choice"] == false
+                twiml = Twilio::TwiML::Response.new do |r|
+                 r.Message "Hi #{user.name}!! Here's what all you can do...\n 1. View selected preferences\n 2. Add preference\n 3. Get upcoming match updates\n 4.League table\n 5. Trending news\n (Reply with 1,2,3,4 or 5)"
+                end
+                twiml.text
+                session["choice"] == true
+              elsif session["status"] == "live" and session["choice"] == true
+                user_choice body 
         else
               error_league    
         end
-    else 
     
+    else 
     # the user isn't registered
     ask_for_registration
     if session["last_context"] == "ask_for_registration" and body.include? "y"
@@ -207,17 +207,23 @@ end
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" or body.include? "6"      
       preference_text 
       if body.include? "1" 
-        preference.team_name = "66" 
+        preference.team_id = "66" 
+        preference.team = "Manchester United"
       elsif body.include? "2" 
-        preference.team_name = "57" 
+        preference.team_id = "57"
+        preference.team = "Arsenal" 
       elsif body.include? "3" 
-        preference.team_name = "61"
+        preference.team_id = "61"
+        preference.team = "Chelsea"
       elsif body.include? "4" 
-        preference.team_name = "65"            
+        preference.team_id = "65"  
+        preference.team = "Manchester City"          
       elsif body.include? "5" 
-        preference.team_name = "64" 
+        preference.team_id = "64" 
+        preference.team = "Liverpool"
       else body.include? "6" 
-        preference.team_name = "73"
+        preference.team_id = "73"
+        preference.team = "Tottenham"
       end  
     else 
       error_league
@@ -228,9 +234,11 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2"       
       preference_text 
       if body.include? "1" 
-        preference.team_name = "5" 
+        preference.team_id = "5" 
+        preference.team = "Bayern Munich"
       else body.include? "2" 
-        preference.team_name = "4" 
+        preference.team_id = "4" 
+        preference.team = "Borussia Dortmund"
       end
     else 
       error_league
@@ -241,13 +249,17 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4"       
       preference_text 
       if body.include? "1" 
-        preference.team_name = "109" 
+        preference.team_id = "109"
+        preference.team = "Juventus" 
       elsif body.include? "2" 
-        preference.team_name = "100" 
+        preference.team_id = "100" 
+        preference.team = "Roma"
       elsif body.include? "3" 
-        preference.team_name = "98"
+        preference.team_id = "98"
+        preference.team = "AC Milan"
       else body.include? "4" 
-        preference.team_name = "113"            
+        preference.team_id = "113"            
+        preference.team = "Napoli"
       end
     else 
       error_league
@@ -258,11 +270,14 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2" or body.include? "3"      
       preference_text 
       if body.include? "1" 
-        preference.team_name = "81" 
+        preference.team_id = "81"
+        preference.team = "Barcelona" 
       elsif body.include? "2" 
-        preference.team_name = "86" 
+        preference.team_id = "86" 
+        preference.team = "Real Madrid"
       else body.include? "3" 
-        preference.team_name = "78"
+        preference.team_id = "78"
+        preference.team = "Ateletico Madrid"
       end
     else 
       error_league
@@ -297,11 +312,110 @@ end
 
 def registered_text
       session["last_context"] = "registered"
+      session["status"] = "live"
+      sesssion["choice"] = false
         twiml = Twilio::TwiML::Response.new do |r|
         r.Message "You're all set laddie!! 1. To add another team reply with more or \n 2. If youre done reply with bye  "
       end
       twiml.text
 end
+
+def user_choice body 
+      if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" 
+        sesssion["choice"] = false
+        
+
+        if body.include? "1" 
+          if user.preferences.count > 0
+            message = "Currently tracking: \n"
+            user.preferences.each do |t|
+              message += "#{t.team} \n"
+            end
+          else
+            message = "You're not tracking any team yet."
+          end
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message message
+          end
+          twiml.text   
+
+
+        elsif body.include? "2" 
+          session["last_context"] = "onboard"     
+            twiml = Twilio::TwiML::Response.new do |r|
+              r.Message "Hi #{user.name}. Lets get your connected with your team eh? (y/n) "
+            end
+              twiml.text
+
+
+        elsif body.include? "3" 
+          preference = Preference.all
+          if preference.count > 0
+            preference.each do |t|
+              team_id = t.team_id
+              url = "http://api.football-data.org/v1/teams/#{ team_id.to_s }/fixtures"
+
+              response = HTTParty.get url
+
+              response["fixtures"].each do |item|
+
+                date = item["date"]
+                status = item["status"]
+                home_team = item["homeTeamName"]
+                away_team = item["awayTeamName"]
+
+                puts "Status = #{status}"
+
+                if status == "TIMED"
+
+                  message = "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+
+                end
+
+              end
+                end
+          else
+            message = "You're not tracking any team yet."
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message message
+          end
+          twiml.text 
+
+        elsif body.include? "4" 
+              preference = Preference.all
+              if preference.count > 0
+                preference.each do |t|
+                competition_id = t.league
+                response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+
+                message = "Top Five Teams: "
+
+                response["standing"].each do |entry|
+
+                position = entry["position"]
+                team_name = entry["teamName"]
+                points = entry["points"]
+
+                if position < 6
+                  message += "#{  position }. #{team_name} with #{ points } points. \n"
+                end
+
+              end
+          else
+            message = "You're not tracking any team yet."
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message message
+          end
+          twiml.text 
+
+          
+        elsif body.include? "5" 
+          #live news
+    else 
+      error_league
+    end
+end
+
 #if existing user ask them if they want to view teams, delete/add preferences for selected teams
 
 
@@ -334,64 +448,67 @@ end
 # 	{ error: "Not allowed"}.to_json
 # end
 
-get '/leaguetable' do 
+# get '/leaguetable' do 
 
 
-  competition_id = 426
+#   competition_id = 426
 
-  response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+#   response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
 
-  top_5 = "Top Ten Teams: "
+#   top_5 = "Top Ten Teams: "
 
-  response["standing"].each do |entry|
+#   response["standing"].each do |entry|
 
-    position = entry["position"]
-    team_name = entry["teamName"]
-    points = entry["points"]
+#     position = entry["position"]
+#     team_name = entry["teamName"]
+#     points = entry["points"]
 
-    if position < 6
-      top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
-    end
+#     if position < 6
+#       top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
+#     end
 
-  end
+#   end
 
-  top_5
+#   top_5
 
-end 
-
-
-get "/fixtures/:id" do 
-
-  url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
-
-  response = HTTParty.get url
-
-  response["fixtures"].each do |item|
-
-    date = item["date"]
-    status = item["status"]
-    home_team = item["homeTeamName"]
-    away_team = item["awayTeamName"]
-
-    puts "Status = #{status}"
-
-    if status == "TIMED"
-
-      return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
-
-    end
-
-  end
-
-end 
+# end 
 
 
-get "/twitter/search/:text" do 
+# get "/fixtures/:id" do 
 
-  url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
+#   url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
 
-  response = HTTParty.get url
+#   response = HTTParty.get url
 
-  response.to_json
+#   response["fixtures"].each do |item|
 
-end 
+#     date = item["date"]
+#     status = item["status"]
+#     home_team = item["homeTeamName"]
+#     away_team = item["awayTeamName"]
+
+#     puts "Status = #{status}"
+
+#     if status == "TIMED"
+
+#       return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+
+#     end
+
+#   end
+
+# end 
+
+
+# get "/twitter/search/:text" do 
+
+#   url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
+
+#   response = HTTParty.get url
+
+#   response.to_json
+
+# end 
+end
+end
+end
