@@ -15,8 +15,6 @@ gem 'builder'
 
 gem 'twilio-ruby'
 
-gem 'football__data'
-
 gemspec 
 
 group :development, :test do
