@@ -45,7 +45,7 @@ end
 
 client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
-  get '/incoming_sms' do
+get '/incoming_sms' do
     
     session["last_context"] ||= nil
 
@@ -99,16 +99,16 @@ client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
         else
               error_league    
         end
-    
     else 
     # the user isn't registered
-    ask_for_registration
-    if session["last_context"] == "ask_for_registration" and body.include? "y"
-      register sender 
-    else
-      error_out      
+        ask_for_registration
+        if session["last_context"] == "ask_for_registration" and body.include? "y"
+          register sender 
+        else
+          error_out      
+        end
     end
-  end
+end
 
 def check_user_exists from_number
     User.where( phone_no: from_number ).count > 0
@@ -194,12 +194,20 @@ end
 def create_preference 
     if session["last_context"] == "pl"
       preference = Preference.create( league_id: "426" )
+      preference.name = user.name
+      session["preference"] = preference
     elsif session["last_context"] == "bl"
       preference = Preference.create( league_id: "430" )
+      preference.name = user.name
+      session["preference"] = preference
     elsif session["last_context"] == "il"
       preference = Preference.create( league_id: "438" )
+      preference.name = user.name
+      session["preference"] = preference
     else session["last_context"] == "sl"
       preference = Preference.create( league_id: "436" )
+      preference.name = user.name
+      session["preference"] = preference
     end 
 end 
 
@@ -207,23 +215,29 @@ end
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" or body.include? "6"      
       preference_text 
       if body.include? "1" 
-        preference.team_id = "66" 
-        preference.team = "Manchester United"
+        detail = Teamdetail.where(team_name: "Manchester United" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Manchester United"
       elsif body.include? "2" 
-        preference.team_id = "57"
-        preference.team = "Arsenal" 
+        detail = Teamdetail.where(team_name: "Arsenal" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Arsenal" 
       elsif body.include? "3" 
-        preference.team_id = "61"
-        preference.team = "Chelsea"
+        detail = Teamdetail.where(team_name: "Chelsea" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Chelsea"
       elsif body.include? "4" 
-        preference.team_id = "65"  
-        preference.team = "Manchester City"          
+        detail = Teamdetail.where(team_name: "Manchester City" )
+        session["preference"].team_id = detail.team_id 
+        session["preference"].team = "Manchester City"          
       elsif body.include? "5" 
-        preference.team_id = "64" 
-        preference.team = "Liverpool"
+        detail = Teamdetail.where(team_name: "Liverpool" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Liverpool"
       else body.include? "6" 
-        preference.team_id = "73"
-        preference.team = "Tottenham"
+        detail = Teamdetail.where(team_name: "Tottenham" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Tottenham"
       end  
     else 
       error_league
@@ -234,11 +248,13 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2"       
       preference_text 
       if body.include? "1" 
-        preference.team_id = "5" 
-        preference.team = "Bayern Munich"
+        detail = Teamdetail.where(team_name: "Bayern Munich" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Bayern Munich"
       else body.include? "2" 
-        preference.team_id = "4" 
-        preference.team = "Borussia Dortmund"
+        detail = Teamdetail.where(team_name: "Borussia Dortmund" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Borussia Dortmund"       
       end
     else 
       error_league
@@ -249,17 +265,21 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4"       
       preference_text 
       if body.include? "1" 
-        preference.team_id = "109"
-        preference.team = "Juventus" 
+        detail = Teamdetail.where(team_name: "Juventus" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Juventus" 
       elsif body.include? "2" 
-        preference.team_id = "100" 
-        preference.team = "Roma"
+        detail = Teamdetail.where(team_name: "Roma" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Roma"
       elsif body.include? "3" 
-        preference.team_id = "98"
-        preference.team = "AC Milan"
+        detail = Teamdetail.where(team_name: "AC Milan" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "AC Milan"
       else body.include? "4" 
-        preference.team_id = "113"            
-        preference.team = "Napoli"
+        detail = Teamdetail.where(team_name: "Napoli" )
+        session["preference"].team_id = detail.team_id            
+        session["preference"].team = "Napoli"
       end
     else 
       error_league
@@ -270,14 +290,17 @@ def update_preference_bl body
     if body.include? "1" or body.include? "2" or body.include? "3"      
       preference_text 
       if body.include? "1" 
-        preference.team_id = "81"
-        preference.team = "Barcelona" 
+        detail = Teamdetail.where(team_name: "Barcelona" )
+        session["preference"].team_id = detail.team_id
+        session["preference"].team = "Barcelona" 
       elsif body.include? "2" 
-        preference.team_id = "86" 
-        preference.team = "Real Madrid"
+        detail = Teamdetail.where(team_name: "Real Madrid" )
+        session["preference"].team_id = detail.team_id 
+        session["preference"].team = "Real Madrid"
       else body.include? "3" 
-        preference.team_id = "78"
-        preference.team = "Ateletico Madrid"
+        detail = Teamdetail.where(team_name: "Ateletico Madrid" )
+        session["preference"].team_id = detail.team_id 
+        session["preference"].team = "Ateletico Madrid"
       end
     else 
       error_league
@@ -324,76 +347,95 @@ def user_choice body
       if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" 
         sesssion["choice"] = false
         
-
         if body.include? "1" 
-          if user.preferences.count > 0
-            message = "Currently tracking: \n"
-            user.preferences.each do |t|
-              message += "#{t.team} \n"
-            end
-          else
-            message = "You're not tracking any team yet."
-          end
-          twiml = Twilio::TwiML::Response.new do |r|
-            r.Message message
-          end
-          twiml.text   
-
+          user_choice_1
 
         elsif body.include? "2" 
-          session["last_context"] = "onboard"     
-            twiml = Twilio::TwiML::Response.new do |r|
-              r.Message "Hi #{user.name}. Lets get your connected with your team eh? (y/n) "
-            end
-              twiml.text
-
+          user_choice_2
 
         elsif body.include? "3" 
-          preference = Preference.all
-          if preference.count > 0
-            preference.each do |t|
-              team_id = t.team_id
-              url = "http://api.football-data.org/v1/teams/#{ team_id.to_s }/fixtures"
-
-              response = HTTParty.get url
-
-              response["fixtures"].each do |item|
-
-                date = item["date"]
-                status = item["status"]
-                home_team = item["homeTeamName"]
-                away_team = item["awayTeamName"]
-
-                puts "Status = #{status}"
-
-                if status == "TIMED"
-
-                  message = "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
-
-                end
-
-              end
-                end
-          else
-            message = "You're not tracking any team yet."
-          twiml = Twilio::TwiML::Response.new do |r|
-            r.Message message
-          end
-          twiml.text 
-        end
-      end
-    end
+          user_choice_3
 
         elsif body.include? "4" 
-              preference = Preference.all
-              if preference.count > 0
-                preference.each do |t|
-                competition_id = t.league
-                response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+          user_choice_4
+      
+        else body.include? "5" 
+          #live news
+        end
+    else 
+      error_league
+    end               
+end
 
-                message = "Top Five Teams: "
+def user_choice_1 
+    preferences = Preference.where(name: user.name) 
+    if preferences.count > 0
+        message = "Currently tracking: \n"
+        preferences.each do |t|
+            message += "#{t.team} \n"
+        end
+    else
+        message = "You're not tracking any team yet."
+    end
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message message
+    end
+          twiml.text  
+end
 
-                response["standing"].each do |entry|
+def user_choice_2
+    session["last_context"] = "onboard"     
+    twiml = Twilio::TwiML::Response.new do |r|
+      r.Message "Hi #{user.name}. Lets get your connected with your team eh? (y/n) "
+    end
+    twiml.text
+end
+
+
+def user_choice_3
+
+    preferences = Preference.where(name: user.name)
+    if preferences.count > 0
+          preferences.each do |t|
+            team_id = t.team_id
+            url = "http://api.football-data.org/v1/teams/#{ team_id.to_s }/fixtures"
+
+            response = HTTParty.get url
+
+            response["fixtures"].each do |item|
+
+              date = item["date"]
+              status = item["status"]
+              home_team = item["homeTeamName"]
+              away_team = item["awayTeamName"]
+
+              puts "Status = #{status}"
+
+              if status == "TIMED"
+
+                message = "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+            end
+          end  
+    else
+        message = "You're not tracking any team yet."
+    end
+    twiml = Twilio::TwiML::Response.new do |r|
+            r.Message message
+    end
+    twiml.text 
+end
+
+def user_choice_4
+
+    preferences = Preference.where(name: user.name)
+    if preferences.count > 0
+        preferences.each do |t|
+            competition_id = t.league
+            response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+
+            message = "Top Five Teams: "
+
+            response["standing"].each do |entry|
 
                 position = entry["position"]
                 team_name = entry["teamName"]
@@ -402,28 +444,16 @@ def user_choice body
                 if position < 6
                   message += "#{  position }. #{team_name} with #{ points } points. \n"
                 end
-              end
-              end  
-              end
-              else
-                  essage = "You're not tracking any team yet."
-              twiml = Twilio::TwiML::Response.new do |r|
-                r.Message message
-              end
-              twiml.text 
+            end      
         end
-      
-        else body.include? "5" 
-          #live news
-        end
-    else 
-      error_league
+    else
+        message = "You're not tracking any team yet."
+    else
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message message
     end
+    twiml.text 
 end
-
-#if existing user ask them if they want to view teams, delete/add preferences for selected teams
-
-
 
 #code snippets
 
@@ -514,7 +544,3 @@ end
 #   response.to_json
 
 # end 
-end
-end
-end
-end
