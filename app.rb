@@ -362,9 +362,9 @@ def user_choice body
         else body.include? "5" 
           #live news
         end
-    else 
-      error_league
-    end               
+      else 
+          error_league
+      end               
 end
 
 def user_choice_1 
@@ -544,5 +544,3 @@ end
 
 #   response.to_json
 
-end 
-end
