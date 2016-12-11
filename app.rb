@@ -382,6 +382,7 @@ def user_choice body
           twiml.text 
         end
       end
+    end
 
         elsif body.include? "4" 
               preference = Preference.all
@@ -401,6 +402,7 @@ def user_choice body
                 if position < 6
                   message += "#{  position }. #{team_name} with #{ points } points. \n"
                 end
+              end
               end  
               end
           else
@@ -408,8 +410,11 @@ def user_choice body
           twiml = Twilio::TwiML::Response.new do |r|
             r.Message message
           end
-          twiml.text 
         end
+          twiml.text 
+        
+        end
+      end
         end  
         else body.include? "5" 
           #live news
@@ -506,7 +511,7 @@ end
 # get "/twitter/search/:text" do 
 
 #   url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
-
+end
 #   response = HTTParty.get url
 
 #   response.to_json
