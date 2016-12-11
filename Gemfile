@@ -15,7 +15,7 @@ gem 'builder'
 
 gem 'twilio-ruby'
 
-gem 'football_data'
+gem 'httparty'
 
 group :development, :test do
   gem 'sqlite3'

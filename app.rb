@@ -9,29 +9,17 @@ require 'rake'
 #end
 
 require 'twilio-ruby'
-require 'football__data'
-
-
+require 'httparty'
 
 enable :sessions
+
+require_relative './models/teamdetail'
+require_relative './models/user'
+require_relative './models/preference'
 
 configure :development do
   require 'dotenv'
   Dotenv.load
-end
-#configuring the gem from 
-# GIthub: https://github.com/delta4d/football-data 
-
-FootballData.configure do |config|
-    # get api key at 'http://api.football-data.org/register'
-    config.api_key = ENV["Footballdata_token"]
-
-    # default api version is 'alpha' if not setted
-    config.api_version = 'alpha'
-
-    # the default control method is 'full' if not setted
-    # see request section on 'http://api.football-data.org/documentation'
-    config.response_control = 'minified'
 end
 
 
@@ -58,34 +46,269 @@ end
 # Help page
 
 
+client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
-
-  # get '/incoming_sms' do
-
-  #   session["last_context"] ||= nil
+  get '/incoming_sms' do
     
-  #   sender = params[:From] || ""
-  #   body = params[:Body] || ""
-  #   body = body.downcase.strip
-    
-  #   # store a record for each request
-  #   log = Log.create( from: sender, messge: body, context: session["last_context"] )
-  #   log.save!
-      
-  #   if check_user_exists( sender )  
-      
-  #     user = get_user sender 
-  #         r.Message "Thanks #{user.first_name}. Just to check, you agree to the terms and conditions and will be ok to get one SMS notification daily?"
-  #       end
-  #       twiml.text
+    session["last_context"] ||= nil
 
-#if existing user ask them if they want to modify teams, delete/add preferences for selected teams
+    sender = params[:From] || ""
+    body = params[:Body] || ""
+    body = body.downcase.strip
+    
+      
+    if check_user_exists( sender )  
+      
+      user = get_user sender 
+        if session["last_context"] == "begin_registration"
+            user.name = body 
+            user.save!
+            session["last_context"] = "onboard"     
+            twiml = Twilio::TwiML::Response.new do |r|
+              r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
+            end
+              twiml.text
+        elsif session["last_context"] == "onboard" 
+            if body.include? "y"
+            session["last_context"] = "league" 
+            twiml = Twilio::TwiML::Response.new do |r|
+              r.Message "Which league lad? \n1.Premier League \n2. Bundesliga \n3. Serie A \n4. Spanish Primera \n (Reply with 1,2,3 or 4)"
+            end
+              twiml.text     
+            else
+              error_league
+        elsif session["last_context"] == "league" 
+              update_league body
+        elsif session["last_context"] == "pl" 
+              update_preference_pl body  
+        elsif session["last_context"] == "bl" 
+              update_preference_bl body  
+        elsif session["last_context"] == "il" 
+              update_preference_il body     
+        elsif session["last_context"] == "sl" 
+              update_preference_sl body  
+        elsif session["last_context"] == "preference" 
+              update_user_preference body 
+        elsif session["last_context"] == "registered" 
+              if body.include? "more"
+                session["last_context"] == "onboard" 
+              twiml = Twilio::TwiML::Response.new do |r|
+              r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
+            end
+              twiml.text
+        else
+              error_league    
+        end
+    else 
+    
+    # the user isn't registered
+    ask_for_registration
+    if session["last_context"] == "ask_for_registration" and body.include? "y"
+      register sender 
+    else
+      error_out      
+    end
+  end
+
+def check_user_exists from_number
+    User.where( phone_no: from_number ).count > 0
+end
+
+def get_user from_number
+    User.where( phone_no: from_number ).first
+end
+
+def ask_for_registration
+
+    session["last_context"] = "ask_for_registration"
+
+    twiml = Twilio::TwiML::Response.new do |r|
+      r.Message "Hi I am Andy, welcome to footbot. It seems like you haven't registered. Lets set you up now, shall we? (y/n)"
+    end
+    twiml.text  
+end
+  
+def register sender
+    session["last_context"] = "begin_registration"
+    
+    user = User.create( phone_no: sender )
+  
+    twiml = Twilio::TwiML::Response.new do |r|
+      r.Message "Great. I'll get you set up. First, what's your name?"
+    end
+    twiml.text 
+ end 
+
+def error_out 
+  
+    twiml = Twilio::TwiML::Response.new do |r|
+      r.Message "Cmon laddie, I need you to register if we're going to chat more"
+    end
+    twiml.text  
+end
+
+def error_league 
+  
+    session["last_context"] = "onboard"     
+            twiml = Twilio::TwiML::Response.new do |r|
+              r.Message "That was an incorrect response. Lets get your reconnected with your team eh? (y/n) "
+            end
+              twiml.text
+end 
+
+def update_league body
+    if body.include? "1"
+          session["last_context"] = "pl" 
+          create_preference
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message "Which team now? \n1.Manchester United \n2. Arsenal \n3. Chelsea \n4. Manchester City \n 5. Liverpool \n6. Tottenham \n(Reply 1,2,3,4,5 or 6)"
+          end
+          twiml.text
+    elsif body.include? "2"
+          session["last_context"] = "bl"
+          create_preference 
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message "Which team now? \n1.Bayern Munich \n2.Borussia Dortmund \n(Reply with 1 or 2)"
+          end
+          twiml.text  
+    elsif body.include? "3"
+          session["last_context"] = "il" 
+          create_preference
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message "Which team now? \n1.Juventus \n2.Roma \n3.AC Milan \n4.Napoli \n(Reply with 1,2,3 or 4)"
+          end
+          twiml.text  
+    elsif body.include? "4"
+          session["last_context"] = "sl" 
+          create_preference
+          twiml = Twilio::TwiML::Response.new do |r|
+            r.Message "Which team now? \n1.Barcelona \n2.Real Madrid \n3.Ateletico Madrid \n(Reply with 1,2 or 3)"
+          end
+          twiml.text  
+    else
+      error_league
+    end
+end
+
+  
+def create_preference 
+    if session["last_context"] == "pl"
+      preference = Preference.create( league_id: "426" )
+    elsif session["last_context"] == "bl"
+      preference = Preference.create( league_id: "430" )
+    elsif session["last_context"] == "il"
+      preference = Preference.create( league_id: "438" )
+    else session["last_context"] == "sl"
+      preference = Preference.create( league_id: "436" )
+    end 
+end 
+
+ def update_preference_pl body 
+    if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4" or body.include? "5" or body.include? "6"      
+      preference_text 
+      if body.include? "1" 
+        preference.team_name = "66" 
+      elsif body.include? "2" 
+        preference.team_name = "57" 
+      elsif body.include? "3" 
+        preference.team_name = "61"
+      elsif body.include? "4" 
+        preference.team_name = "65"            
+      elsif body.include? "5" 
+        preference.team_name = "64" 
+      else body.include? "6" 
+        preference.team_name = "73"
+      end  
+    else 
+      error_league
+    end
+ end 
+
+def update_preference_bl body 
+    if body.include? "1" or body.include? "2"       
+      preference_text 
+      if body.include? "1" 
+        preference.team_name = "5" 
+      else body.include? "2" 
+        preference.team_name = "4" 
+      end
+    else 
+      error_league
+    end
+ end 
+
+ def update_preference_il body 
+    if body.include? "1" or body.include? "2" or body.include? "3" or body.include? "4"       
+      preference_text 
+      if body.include? "1" 
+        preference.team_name = "109" 
+      elsif body.include? "2" 
+        preference.team_name = "100" 
+      elsif body.include? "3" 
+        preference.team_name = "98"
+      else body.include? "4" 
+        preference.team_name = "113"            
+      end
+    else 
+      error_league
+    end
+ end 
+
+ def update_preference_sl body 
+    if body.include? "1" or body.include? "2" or body.include? "3"      
+      preference_text 
+      if body.include? "1" 
+        preference.team_name = "81" 
+      elsif body.include? "2" 
+        preference.team_name = "86" 
+      else body.include? "3" 
+        preference.team_name = "78"
+      end
+    else 
+      error_league
+    end
+ end  
+
+def preference_text
+      session["last_context"] = "preference"
+        twiml = Twilio::TwiML::Response.new do |r|
+        r.Message "We are now all set with the team. Lets get your update preferences and we should be set.\n 1. Weekly pre-match notifications \n 2. Live twitter updates\n (eg. reply with 1,2 for both) "
+      end
+      twiml.text
+end
+
+def update_user_preference body
+    if body.include? "1" and body.include? "2" 
+      user.notify_before_match = true
+      user.get_live_updates = true
+      registered_text
+    elsif body.include? "1"
+      user.notify_before_match = true
+      user.get_live_updates = false
+      registered_text
+    elsif body.include? "2"
+      user.notify_before_match = false 
+      user.get_live_updates = true
+      registered_text
+    else 
+      preference_text
+    end
+end
+
+def registered_text
+      session["last_context"] = "registered"
+        twiml = Twilio::TwiML::Response.new do |r|
+        r.Message "You're all set laddie!! 1. To add another team reply with more or \n 2. If youre done reply with bye  "
+      end
+      twiml.text
+end
+#if existing user ask them if they want to view teams, delete/add preferences for selected teams
 
 
 
 #code snippets
 
-# # client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
+
 
 # # get "/send_sms" do
 # #   client.account.messages.create(
@@ -97,32 +320,9 @@ end
 # #   "Sent message"
 # # end
 
-# get '/incoming_sms' do
-
-#   session["counter"] ||= 0
-#   count = session["counter"]
-  
-#   sender = params[:From] || ""
-#   body = params[:Body] || ""
-#   body = body.downcase.strip
-
-#   link = Reply.where(placeholder: body)
-  
-#   if link	
-#   	message = link.msg  
-#   else
-#  	message = "Not valid, try who, why, what or where"   
-#   end
-  
-#   session["counter"] += 1
-  
-#   twiml = Twilio::TwiML::Response.new do |r|
-#     r.Message message
-#   end
 
 #   content_type 'text/xml'
 
-#   twiml.text
   
 # end
 
@@ -134,35 +334,64 @@ end
 # 	{ error: "Not allowed"}.to_json
 # end
 
+get '/leaguetable' do 
 
-#  # def check_user_exists from_number
-#  #    User.where( phone_number: from_number ).count > 0
-#  #  end
 
-#  #  def get_user from_number
-#  #    User.where( phone_number: from_number ).first
-#  #  end
+  competition_id = 426
 
-#  #  def ask_for_registration
-  
-#  #    session["last_context"] = "ask_for_registration"
-  
-#  #    twiml = Twilio::TwiML::Response.new do |r|
-#  #      r.Message "It doesn't look like you're registered. Would you like to get set up now?"
-#  #    end
-#  #    twiml.text
-  
-#  #  end
+  response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
 
-#  #  def begin_registration sender
-  
-#  #    session["last_context"] = "begin_registration"
-  
-#  #    user = User.create( phone_number: sender )
-  
-#  #    twiml = Twilio::TwiML::Response.new do |r|
-#  #      r.Message "Great. I'll get you set up. First, what's your name?"
-#  #    end
-#  #    twiml.text
-  
-#   end 
+  top_5 = "Top Ten Teams: "
+
+  response["standing"].each do |entry|
+
+    position = entry["position"]
+    team_name = entry["teamName"]
+    points = entry["points"]
+
+    if position < 6
+      top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
+    end
+
+  end
+
+  top_5
+
+end 
+
+
+get "/fixtures/:id" do 
+
+  url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
+
+  response = HTTParty.get url
+
+  response["fixtures"].each do |item|
+
+    date = item["date"]
+    status = item["status"]
+    home_team = item["homeTeamName"]
+    away_team = item["awayTeamName"]
+
+    puts "Status = #{status}"
+
+    if status == "TIMED"
+
+      return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+
+    end
+
+  end
+
+end 
+
+
+get "/twitter/search/:text" do 
+
+  url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
+
+  response = HTTParty.get url
+
+  response.to_json
+
+end 

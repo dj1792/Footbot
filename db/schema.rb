@@ -10,12 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161208182441) do
+ActiveRecord::Schema.define(version: 20161211041415) do
 
   create_table "preferences", force: :cascade do |t|
     t.integer "user_id"
     t.string  "league"
-    t.string  "int"
+    t.string  "team"
+  end
+
+  create_table "teamdetails", force: :cascade do |t|
+    t.integer "league_id"
+    t.string  "team_id"
+    t.string  "team_name"
   end
 
   create_table "users", force: :cascade do |t|
