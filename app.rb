@@ -545,4 +545,4 @@ end
 #   response = HTTParty.get url
 
 #   response.to_json
-
+end
