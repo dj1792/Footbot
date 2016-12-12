@@ -551,30 +551,30 @@ get '/leaguetable' do
 end 
 
 
-get "/fixtures/:id" do 
+# get "/fixtures/:id" do 
 
-  url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
+#   url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
 
-  response = HTTParty.get url
+#   response = HTTParty.get url
 
-  response["fixtures"].each do |item|
+#   response["fixtures"].each do |item|
 
-    date = item["date"]
-    status = item["status"]
-    home_team = item["homeTeamName"]
-    away_team = item["awayTeamName"]
+#     date = item["date"]
+#     status = item["status"]
+#     home_team = item["homeTeamName"]
+#     away_team = item["awayTeamName"]
 
-    puts "Status = #{status}"
+#     puts "Status = #{status}"
 
-    if status == "TIMED"
+#     if status == "TIMED"
 
-      return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+#       return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
 
-    end
+#     end
 
-  end
+#   end
 
-end 
+# end 
 
 
 get "/twitter/search/:text" do 
