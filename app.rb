@@ -33,13 +33,15 @@ configure :development do
   Dotenv.load
 end
 
+# ----------------------------------------------------------------------
+#     ROUTES, END POINTS AND ACTIONS
+# ----------------------------------------------------------------------
+
 get'/' do
   error 401
 end
 
-error 401 do
-  { error: "Not allowed"}.to_json
-end
+
 
 def check_for_user from_number
     User.where( phone_no: from_number ).count > 0
@@ -78,7 +80,7 @@ get '/incoming_sms' do
     message = "Hello! My name is Andy"
     twiml = Twilio::TwiML::Response.new do |r|
         r.Message message
-        end
+    end
     twiml.text
     end
 
@@ -123,6 +125,7 @@ get '/incoming_sms' do
                 session["choice"] == true
               elsif session["status"] == "live" and session["choice"] == true
                 user_choice body 
+              end
         else
               error_league    
         end
@@ -162,23 +165,6 @@ def register sender
     twiml.text 
 end 
 
-def error_out 
-  
-    twiml = Twilio::TwiML::Response.new do |r|
-      r.Message "Cmon laddie, I need you to register if we're going to chat more"
-    end
-    twiml.text  
-end
-
-def error_league 
-  
-    session["last_context"] = "onboard"     
-    twiml = Twilio::TwiML::Response.new do |r|
-        r.Message "That was an incorrect response. Lets get your reconnected with your team eh? (y/n) "
-    end
-    twiml.text
-end 
-
 def update_league body
     if body.include? "1"
           session["last_context"] = "pl" 
@@ -212,6 +198,11 @@ def update_league body
       error_league
     end
 end
+
+# ----------------------------------------------------------------------
+#   METHODS
+#   Add any custom methods below
+# ----------------------------------------------------------------------
 
   
 def create_preference 
@@ -481,7 +472,30 @@ def user_choice_4
     twiml.text 
 end
 
+# ----------------------------------------------------------------------
+#     ERRORS
+# ----------------------------------------------------------------------
 
+error 401 do
+  { error: "Not allowed"}.to_json
+end
+
+def error_out 
+  
+    twiml = Twilio::TwiML::Response.new do |r|
+      r.Message "Cmon laddie, I need you to register if we're going to chat more"
+    end
+    twiml.text  
+end
+
+def error_league 
+  
+    session["last_context"] = "onboard"     
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message "That was an incorrect response. Lets get your reconnected with your team eh? (y/n) "
+    end
+    twiml.text
+end 
 
 #code snippets
 
@@ -564,4 +578,3 @@ end
 #   response = HTTParty.get url
 
 #   response.to_json
-end 
