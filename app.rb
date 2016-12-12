@@ -173,10 +173,10 @@ end
 def error_league 
   
     session["last_context"] = "onboard"     
-            twiml = Twilio::TwiML::Response.new do |r|
-              r.Message "That was an incorrect response. Lets get your reconnected with your team eh? (y/n) "
-            end
-              twiml.text
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message "That was an incorrect response. Lets get your reconnected with your team eh? (y/n) "
+    end
+    twiml.text
 end 
 
 def update_league body
@@ -227,10 +227,12 @@ def create_preference
       preference = Preference.create( league_id: "438" )
       preference.name = user.name
       session["preference"] = preference
-    else session["last_context"] == "sl"
+    elsif session["last_context"] == "sl"
       preference = Preference.create( league_id: "436" )
       preference.name = user.name
       session["preference"] = preference
+    else 
+      error_league  
     end 
 end 
 
@@ -257,7 +259,7 @@ def update_preference_pl body
         detail = Teamdetail.where(team_name: "Liverpool" )
         session["preference"].team_id = detail.team_id
         session["preference"].team = "Liverpool"
-      else body.include? "6" 
+      else  
         detail = Teamdetail.where(team_name: "Tottenham" )
         session["preference"].team_id = detail.team_id
         session["preference"].team = "Tottenham"
@@ -274,7 +276,7 @@ def update_preference_bl body
         detail = Teamdetail.where(team_name: "Bayern Munich" )
         session["preference"].team_id = detail.team_id
         session["preference"].team = "Bayern Munich"
-      else body.include? "2" 
+      else  
         detail = Teamdetail.where(team_name: "Borussia Dortmund" )
         session["preference"].team_id = detail.team_id
         session["preference"].team = "Borussia Dortmund"       
@@ -299,7 +301,7 @@ def update_preference_il body
         detail = Teamdetail.where(team_name: "AC Milan" )
         session["preference"].team_id = detail.team_id
         session["preference"].team = "AC Milan"
-      else body.include? "4" 
+      else 
         detail = Teamdetail.where(team_name: "Napoli" )
         session["preference"].team_id = detail.team_id            
         session["preference"].team = "Napoli"
@@ -320,7 +322,7 @@ def update_preference_sl body
         detail = Teamdetail.where(team_name: "Real Madrid" )
         session["preference"].team_id = detail.team_id 
         session["preference"].team = "Real Madrid"
-      else body.include? "3" 
+      else 
         detail = Teamdetail.where(team_name: "Ateletico Madrid" )
         session["preference"].team_id = detail.team_id 
         session["preference"].team = "Ateletico Madrid"
@@ -332,7 +334,7 @@ end
 
 def preference_text
       session["last_context"] = "preference"
-        twiml = Twilio::TwiML::Response.new do |r|
+      twiml = Twilio::TwiML::Response.new do |r|
         r.Message "We are now all set with the team. Lets get your update preferences and we should be set.\n 1. Weekly pre-match notifications \n 2. Live twitter updates\n (eg. reply with 1,2 for both) "
       end
       twiml.text
@@ -360,7 +362,7 @@ def registered_text
       session["last_context"] = "registered"
       session["status"] = "live"
       sesssion["choice"] = false
-        twiml = Twilio::TwiML::Response.new do |r|
+      twiml = Twilio::TwiML::Response.new do |r|
         r.Message "You're all set laddie!! 1. To add another team reply with more or \n 2. If youre done reply with bye  "
       end
       twiml.text
@@ -382,7 +384,7 @@ def user_choice body
         elsif body.include? "4" 
           user_choice_4
       
-        else body.include? "5" 
+        else  
           #live news
         end
       else 
@@ -441,7 +443,7 @@ def user_choice_3
             end
           end
     else
-        message = "You're not tracking any team yet."
+        message = "A fan without a team, take a piss son"
     end
     twiml = Twilio::TwiML::Response.new do |r|
             r.Message message
@@ -562,4 +564,3 @@ end
 #   response = HTTParty.get url
 
 #   response.to_json
-end
