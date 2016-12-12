@@ -44,7 +44,10 @@ end
 
 
 def check_for_user from_number
-    User.where( phone_no: from_number ).count > 0
+    puts "Checking for user from #{from_number }"
+    has_user = User.where( phone_no: from_number ).count > 0
+    puts "Has user === #{has_user}"
+    has_user
 end
 # Checking if they are new users
 
@@ -141,7 +144,10 @@ get '/incoming_sms' do
 end
 
 def get_user from_number
-    User.where( phone_no: from_number ).first
+    puts  "Finding user for #{from_number}"
+    user = User.where( phone_no: from_number ).first
+    puts user 
+    user
 end
 
 def ask_for_registration
@@ -157,6 +163,8 @@ end
 def begin_registration sender
     session["last_context"] = "begin_registration"
     user = User.create(phone_no: sender) 
+    user.save!
+
     twiml = Twilio::TwiML::Response.new do |r|
       r.Message "Great. I'll get you set up. First, what's your name?"
     end
