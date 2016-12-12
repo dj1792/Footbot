@@ -80,7 +80,7 @@ get '/incoming_sms' do
         r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
         end
     twiml.text
-
+    end
     if check_for_user( sender )  
         user = get_user sender 
         if session["last_context"] == "begin_registration"
