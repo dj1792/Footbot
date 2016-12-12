@@ -525,30 +525,30 @@ end
 
 
 
-get '/leaguetable' do 
+# get '/leaguetable' do 
 
 
-  competition_id = 426
+#   competition_id = 426
 
-  response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+#   response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
 
-  top_5 = "Top Ten Teams: "
+#   top_5 = "Top Ten Teams: "
 
-  response["standing"].each do |entry|
+#   response["standing"].each do |entry|
 
-    position = entry["position"]
-    team_name = entry["teamName"]
-    points = entry["points"]
+#     position = entry["position"]
+#     team_name = entry["teamName"]
+#     points = entry["points"]
 
-    if position < 6
-      top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
-    end
+#     if position < 6
+#       top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
+#     end
 
-  end
+#   end
 
-  top_5
+#   top_5
 
-end 
+# end 
 
 
 # get "/fixtures/:id" do 
