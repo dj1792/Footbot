@@ -30,9 +30,7 @@ error 401 do
   { error: "Not allowed"}.to_json
 end
 
-def check_for_user from_number
-    User.where( phone_no: from_number ).count > 0
-end
+
 # Checking if they are new users
 
 # Take input of team preference from user
@@ -63,15 +61,14 @@ get '/incoming_sms' do
     body = params[:Body] || ""
     body = body.downcase.strip
     
-    session["last_context"] = "onboard" 
       
     if check_for_user( sender )  
       
       user = get_user sender 
-        #if session["last_context"] == "begin_registration"
-        #    user.name = body 
-        #    user.save!
-        if session["last_context"] = "onboard"     
+        if session["last_context"] == "begin_registration"
+            user.name = body 
+            user.save!
+            session["last_context"] = "onboard"     
             twiml = Twilio::TwiML::Response.new do |r|
               r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
             end
