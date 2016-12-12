@@ -44,7 +44,10 @@ end
 
 
 def check_for_user from_number
-    User.where( phone_no: from_number ).count > 0
+    puts "Checking for user from #{from_number }"
+    has_user = User.where( phone_no: from_number ).count > 0
+    puts "Has user === #{has_user}"
+    has_user
 end
 # Checking if they are new users
 
