@@ -113,7 +113,7 @@ get '/incoming_sms' do
     end
 end
 
-get'/' do
+get '/' do
   error 401
 end
 
