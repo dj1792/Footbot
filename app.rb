@@ -110,6 +110,8 @@ get '/incoming_sms' do
     end
 end
 
+private
+
 def check_for_user from_number
     User.where( phone_no: from_number ).count > 0
 end
@@ -545,4 +547,4 @@ end
 #   response = HTTParty.get url
 
 #   response.to_json
-end
+
