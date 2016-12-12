@@ -46,6 +46,14 @@ def check_for_user from_number
     User.where( phone_no: from_number ).count > 0
 end
 
+get '/' do
+  error 401
+end
+
+error 401 do
+  { error: "Not allowed"}.to_json
+end
+
 client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
 get '/incoming_sms' do
@@ -111,14 +119,6 @@ get '/incoming_sms' do
           error_out      
         end
     end
-end
-
-get '/' do
-  error 401
-end
-
-error 401 do
-  { error: "Not allowed"}.to_json
 end
 
 private
