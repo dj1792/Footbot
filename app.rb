@@ -54,7 +54,7 @@ get '/incoming_sms' do
     body = body.downcase.strip
     
       
-    if check_user_exists sender  
+    if check_for_user sender  
       
       user = get_user sender 
         if session["last_context"] == "begin_registration"
@@ -110,7 +110,7 @@ get '/incoming_sms' do
     end
 end
 
-def check_user_exists from_number
+def check_for_user from_number
     User.where( phone_no: from_number ).count > 0
 end
 
