@@ -121,12 +121,12 @@ get '/incoming_sms' do
               error_league    
         end
     else 
-    # the user isn't registered
-        ask_for_registration
         if session["last_context"] == "ask_for_registration" and body.include? "y"
           register sender 
+        elsif session["last_context"] == "ask_for_registration" and body.include? "n"
+          error_out
         else
-          error_out      
+          ask_for_registration      
         end
     end
 end
