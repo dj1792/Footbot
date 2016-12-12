@@ -525,62 +525,62 @@ end
 
 
 
-# get '/leaguetable' do 
+get '/leaguetable' do 
 
 
-#   competition_id = 426
+  competition_id = 426
 
-#   response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+  response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
 
-#   top_5 = "Top Ten Teams: "
+  top_5 = "Top Ten Teams: "
 
-#   response["standing"].each do |entry|
+  response["standing"].each do |entry|
 
-#     position = entry["position"]
-#     team_name = entry["teamName"]
-#     points = entry["points"]
+    position = entry["position"]
+    team_name = entry["teamName"]
+    points = entry["points"]
 
-#     if position < 6
-#       top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
-#     end
+    if position < 6
+      top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
+    end
 
-#   end
+  end
 
-#   top_5
+  top_5
 
-# end 
-
-
-# get "/fixtures/:id" do 
-
-#   url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
-
-#   response = HTTParty.get url
-
-#   response["fixtures"].each do |item|
-
-#     date = item["date"]
-#     status = item["status"]
-#     home_team = item["homeTeamName"]
-#     away_team = item["awayTeamName"]
-
-#     puts "Status = #{status}"
-
-#     if status == "TIMED"
-
-#       return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
-
-#     end
-
-#   end
-
-# end 
+end 
 
 
-# get "/twitter/search/:text" do 
+get "/fixtures/:id" do 
 
-#   url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
+  url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
 
-#   response = HTTParty.get url
+  response = HTTParty.get url
 
-#   response.to_json
+  response["fixtures"].each do |item|
+
+    date = item["date"]
+    status = item["status"]
+    home_team = item["homeTeamName"]
+    away_team = item["awayTeamName"]
+
+    puts "Status = #{status}"
+
+    if status == "TIMED"
+
+      return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+
+    end
+
+  end
+
+end 
+
+
+get "/twitter/search/:text" do 
+
+  url = "https://api.twitter.com/1.1/search/tweets.json?q={ params[:text].to_s }"
+
+  response = HTTParty.get url
+
+  response.to_json
