@@ -131,7 +131,7 @@ get '/incoming_sms' do
         end
     else 
         if session["last_context"] == "ask_for_registration" and body.include? "y"
-          register sender 
+          register ( sender.to_s )
         elsif session["last_context"] == "ask_for_registration" and body.include? "n"
           error_out
         else
@@ -156,9 +156,7 @@ end
   
 def register sender
     session["last_context"] = "begin_registration"
-    
-    user = User.create( phone_no: sender.to_s )
-  
+    user = User.create( phone_no: sender ) 
     twiml = Twilio::TwiML::Response.new do |r|
       r.Message "Great. I'll get you set up. First, what's your name?"
     end
