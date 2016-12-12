@@ -76,15 +76,15 @@ get '/incoming_sms' do
     body = params[:Body] || ""
     body = body.downcase.strip
     
-    if ['hello', 'hey', 'hi'].include?(body)
-    message = "Hello! My name is Andy"
-    twiml = Twilio::TwiML::Response.new do |r|
-        r.Message message
-    end
-    twiml.text
-    end
+    # if ['hello', 'hey', 'hi'].include?(body)
+    # message = "Hello! My name is Andy"
+    # twiml = Twilio::TwiML::Response.new do |r|
+    #     r.Message message
+    # end
+    # twiml.text
+    # end
 
-    if check_for_user( sender )  
+    if check_for_user sender   
         user = get_user sender 
         if session["last_context"] == "begin_registration"
             user.name = body 
@@ -157,7 +157,7 @@ end
 def register sender
     session["last_context"] = "begin_registration"
     
-    user = User.create( phone_no: sender )
+    user = User.create( phone_no: sender.to_s )
   
     twiml = Twilio::TwiML::Response.new do |r|
       r.Message "Great. I'll get you set up. First, what's your name?"
