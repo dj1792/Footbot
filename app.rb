@@ -74,13 +74,13 @@ get '/incoming_sms' do
     body = params[:Body] || ""
     body = body.downcase.strip
     
-    if ['hello', 'hey', 'hi'].include?(body)
-    message = "Hello! My name is Andy"
-    twiml = Twilio::TwiML::Response.new do |r|
-        r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
-        end
-    twiml.text
-    end
+    # if ['hello', 'hey', 'hi'].include?(body)
+    # message = "Hello! My name is Andy"
+    # twiml = Twilio::TwiML::Response.new do |r|
+    #     r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
+    #     end
+    # twiml.text
+    # end
     if check_for_user( sender )  
         user = get_user sender 
         if session["last_context"] == "begin_registration"
