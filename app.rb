@@ -525,56 +525,56 @@ end
 
 
 
-# get '/leaguetable' do 
+get '/leaguetable' do 
 
 
-#   competition_id = 426
+  competition_id = 426
 
-#   response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
+  response = HTTParty.get "http://api.football-data.org/v1/competitions/#{competition_id.to_s}/leagueTable"
 
-#   top_5 = "Top Ten Teams: "
+  top_5 = "Top Ten Teams: "
 
-#   response["standing"].each do |entry|
+  response["standing"].each do |entry|
 
-#     position = entry["position"]
-#     team_name = entry["teamName"]
-#     points = entry["points"]
+    position = entry["position"]
+    team_name = entry["teamName"]
+    points = entry["points"]
 
-#     if position < 6
-#       top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
-#     end
+    if position < 6
+      top_5 += "#{  position }. #{team_name} with #{ points } points. \n"
+    end
 
-#   end
+  end
 
-#   top_5
+  top_5
 
-# end 
+end 
 
 
-# get "/fixtures/:id" do 
+get "/fixtures/:id" do 
 
-#   url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
+  url = "http://api.football-data.org/v1/teams/#{ params[:id].to_s }/fixtures"
 
-#   response = HTTParty.get url
+  response = HTTParty.get url
 
-#   response["fixtures"].each do |item|
+  response["fixtures"].each do |item|
 
-#     date = item["date"]
-#     status = item["status"]
-#     home_team = item["homeTeamName"]
-#     away_team = item["awayTeamName"]
+    date = item["date"]
+    status = item["status"]
+    home_team = item["homeTeamName"]
+    away_team = item["awayTeamName"]
 
-#     puts "Status = #{status}"
+    puts "Status = #{status}"
 
-#     if status == "TIMED"
+    if status == "TIMED"
 
-#       return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
+      return "Next match is on #{date}. Home team is #{home_team} playing against #{ away_team }"
 
-#     end
+    end
 
-#   end
+  end
 
-# end 
+end 
 
 
 get "/twitter/search/:text" do 
@@ -584,3 +584,4 @@ get "/twitter/search/:text" do
   response = HTTParty.get url
 
   response.to_json
+end
