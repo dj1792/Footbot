@@ -30,7 +30,9 @@ error 401 do
   { error: "Not allowed"}.to_json
 end
 
-
+def check_for_user from_number
+    User.where( phone_no: from_number ).count > 0
+end
 # Checking if they are new users
 
 # Take input of team preference from user
