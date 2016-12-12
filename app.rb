@@ -42,6 +42,9 @@ end
 
 # Help page
 
+def check_for_user from_number
+    User.where( phone_no: from_number ).count > 0
+end
 
 client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
@@ -119,10 +122,6 @@ error 401 do
 end
 
 private
-
-  def check_for_user from_number
-      User.where( phone_no: from_number ).count > 0
-  end
 
   def get_user from_number
       User.where( phone_no: from_number ).first
