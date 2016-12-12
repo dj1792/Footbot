@@ -156,7 +156,7 @@ end
   
 def begin_registration sender
     session["last_context"] = "begin_registration"
-    user = User.create( phone_no: sender ) 
+    user = User.create(phone_no: sender) 
     twiml = Twilio::TwiML::Response.new do |r|
       r.Message "Great. I'll get you set up. First, what's your name?"
     end
