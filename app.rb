@@ -11,11 +11,22 @@ require 'rake'
 require 'twilio-ruby'
 require 'httparty'
 
+# enable sessions for this project
 enable :sessions
+
+# require any models 
+# you add to the folder
+# using the following syntax:
+# require_relative './models/<model_name>'
 
 require_relative './models/teamdetail'
 require_relative './models/user'
 require_relative './models/preference'
+
+# ----------------------------------------------------------------------
+
+# Load environment variables using Dotenv. If a .env file exists, it will
+# set environment variables from that file (useful for dev environments)
 
 configure :development do
   require 'dotenv'
@@ -57,7 +68,7 @@ client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
 get '/incoming_sms' do
     
-    session["last_context"] ||= nil
+    session["last_context"] ||= ""
 
     sender = params[:From] || ""
     body = params[:Body] || ""
