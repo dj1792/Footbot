@@ -54,7 +54,7 @@ get '/incoming_sms' do
     body = body.downcase.strip
     
       
-    if check_user_exists( sender )  
+    if check_user_exists sender  
       
       user = get_user sender 
         if session["last_context"] == "begin_registration"
