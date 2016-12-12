@@ -1,5 +1,6 @@
 # delete anything that already exists
 Teamdetail.delete_all
+User.delete_all 
 
 # create a bunch of data to test with
 Teamdetail.create!([{ league_id: "426", team_id: "66", team_name: "Manchester United FC" } ])
@@ -17,3 +18,4 @@ Teamdetail.create!([{ league_id: "438", team_id: "113", team_name: "Napoli" } ])
 Teamdetail.create!([{ league_id: "436", team_id: "81", team_name: "Barcelona" } ])
 Teamdetail.create!([{ league_id: "436", team_id: "86", team_name: "Real Madrid" } ])
 Teamdetail.create!([{ league_id: "436", team_id: "78", team_name: "Ateletico Madrid" } ])
+User.create!([{ name: "Daksh", phone_no: "+14122947286", notify_before_match: false, get_live_updates: false  } ])
