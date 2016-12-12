@@ -101,24 +101,24 @@ get '/incoming_sms' do
             if body.include? "y"
             session["last_context"] = "league" 
             twiml = Twilio::TwiML::Response.new do |r|
-              r.Message "Which league lad? \n1.Premier League \n2. Bundesliga \n3. Serie A \n4. Spanish Primera \n (Reply with 1,2,3 or 4)"
+              r.Message "Which league lad? \n1. Premier League \n2. Bundesliga \n3. Serie A \n4. Spanish Primera \n (Reply with 1,2,3 or 4)"
             end
               twiml.text     
             else
               error_league
             end
         elsif session["last_context"] == "league" 
-              update_league( body ) 
+              update_league body  
         elsif session["last_context"] == "pl" 
-              update_preference_pl ( body )  
+              update_preference_pl body 
         elsif session["last_context"] == "bl" 
-              update_preference_bl ( body )  
+              update_preference_bl body 
         elsif session["last_context"] == "il" 
-              update_preference_il ( body )     
+              update_preference_il body    
         elsif session["last_context"] == "sl" 
-              update_preference_sl ( body )  
+              update_preference_sl body 
         elsif session["last_context"] == "preference" 
-              update_user_preference ( body ) 
+              update_user_preference body
         elsif session["last_context"] == "registered" 
               if session["status"] == "live" and session["choice"] == false
                 twiml = Twilio::TwiML::Response.new do |r|
@@ -489,7 +489,7 @@ end
 def error_out 
   
     twiml = Twilio::TwiML::Response.new do |r|
-      r.Message "Cmon laddie, I need you to register if we're going to chat more"
+      r.Message "Cmon laddie, I need you to register before you can start kickin a football"
     end
     twiml.text  
 end
