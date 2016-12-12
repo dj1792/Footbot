@@ -74,10 +74,15 @@ get '/incoming_sms' do
     body = params[:Body] || ""
     body = body.downcase.strip
     
-      
+    if ['hello', 'hey', 'hi'].include?(body)
+    message = "Hello! My name is Andy"
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message "Great #{user.name}. Lets get your connected with your team eh? (y/n) "
+        end
+    twiml.text
+
     if check_for_user( sender )  
-      
-      user = get_user sender 
+        user = get_user sender 
         if session["last_context"] == "begin_registration"
             user.name = body 
             user.save!
@@ -97,17 +102,17 @@ get '/incoming_sms' do
               error_league
             end
         elsif session["last_context"] == "league" 
-              update_league body
+              update_league( body ) 
         elsif session["last_context"] == "pl" 
-              update_preference_pl body  
+              update_preference_pl ( body )  
         elsif session["last_context"] == "bl" 
-              update_preference_bl body  
+              update_preference_bl ( body )  
         elsif session["last_context"] == "il" 
-              update_preference_il body     
+              update_preference_il ( body )     
         elsif session["last_context"] == "sl" 
-              update_preference_sl body  
+              update_preference_sl ( body )  
         elsif session["last_context"] == "preference" 
-              update_user_preference body 
+              update_user_preference ( body ) 
         elsif session["last_context"] == "registered" 
               if session["status"] == "live" and session["choice"] == false
                 twiml = Twilio::TwiML::Response.new do |r|
