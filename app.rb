@@ -49,25 +49,6 @@ def check_for_user from_number
     puts "Has user === #{has_user}"
     has_user
 end
-# Checking if they are new users
-
-# Take input of team preference from user
-
-# Take preference of what bot should do every week 
-  # Before K.O
-    # List fixture and KO time
-    # List table rank
-
-# Modifying preferences 
-  # Team
-    # Add team
-    # Delete team
-  # Matchday options for team 
-
-# Stop updates between matches
-
-# Help page
-
 
 client = Twilio::REST::Client.new ENV["Twilio_sid"], ENV["Twilio_token"]
 
@@ -79,13 +60,13 @@ get '/incoming_sms' do
     body = params[:Body] || ""
     body = body.downcase.strip
     
-    # if ['hello', 'hey', 'hi'].include?(body)
-    # message = "Hello! My name is Andy"
-    # twiml = Twilio::TwiML::Response.new do |r|
-    #     r.Message message
-    # end
-    # twiml.text
-    # end
+    if body.include? "help"
+        message = "Hello! My name is Andy and welcome to FootBot!! Crazy about football eh? Let me tell you what all I can do once you sign-up.\n 1. Weekly pre-match notifications \n 2. Live twitter updates\n (eg. reply with 1,2 for both)"
+    twiml = Twilio::TwiML::Response.new do |r|
+        r.Message message
+    end
+    twiml.text
+    end
 
     if check_for_user sender   
         user = get_user sender 
@@ -122,7 +103,7 @@ get '/incoming_sms' do
         elsif session["last_context"] == "registered" 
               if session["status"] == "live" and session["choice"] == false
                 twiml = Twilio::TwiML::Response.new do |r|
-                 r.Message "Hi #{user.name}!! Here's what all you can do...\n 1. View selected preferences\n 2. Add preference\n 3. Get upcoming match updates\n 4.League table\n 5. Trending news\n (Reply with 1,2,3,4 or 5)"
+                  r.Message "Hi #{user.name}!! Here's what all you can do...\n 1. View selected preferences\n 2. Add preference\n 3. Get upcoming match updates\n 4.League table\n 5. Trending news\n (Reply with 1,2,3,4 or 5)"
                 end
                 twiml.text
                 session["choice"] == true
